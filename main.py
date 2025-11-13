@@ -1,57 +1,49 @@
+from functions import caesar_encryption, caesar_decryption, fence_encryption, fence_decryption
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-def caesar_encryption(text: str, offset: int):
-    l_list = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
-    encrypted_text = ""
-    for ch in text:
-        if ch not in l_list:
-            encrypted_text += ch
-        else:
-            for i in range(len(l_list)):
-                if ch == l_list[i]:
-                    encrypted_text += l_list[(i + offset) % 26]
-    return encrypted_text
+app = FastAPI()
 
-def caesar_decryption(text: str, offset: int):
-    l_list = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
-    decrypted_text = ""
-    for ch in text:
-        if ch not in l_list:
-            decrypted_text += ch
-        else:
-            for i in range(len(l_list)):
-                if ch == l_list[i]:
-                    decrypted_text += l_list[(i - offset) % 26]
-    return decrypted_text
+@app.get("/test")
+def test():
+    return {"msg": "hi from test"}
 
-def fence_encryption(text: str):
-    encrypted_text = ""
-    l_list = []
-    for ch in text:
-        if ch != " ":
-            l_list.append(ch)
-    for i in range(len(l_list)):
-        if i % 2 == 0:
-            encrypted_text += l_list[i]
-    for i in range(len(l_list)):
-        if i % 2 != 0:
-            encrypted_text += l_list[i]
-    return encrypted_text
+@app.get("/test/{name}")
+def test_name(name):
+    with open(".names.txt", "a") as f:
+        f.write(f"name: {name}\n")
+    return { "msg": f"saved user, {name}"}
 
-def fence_decryption(text: str):
-    decrypted_text = ""
-    l_list = []
-    for ch in text:
-        l_list.append(ch)
-    if len(l_list) % 2 == 0:
-        middle = len(l_list) // 2
+class CaesarCipher(BaseModel):
+    text: str
+    offset: int
+    mode: str
+
+@app.post("/caesar")
+def caesar_cipher(cipher: CaesarCipher):
+    if cipher.mode == "encrypt":
+        encrypted_text = caesar_encryption(cipher.text, cipher.offset)
+        return { "encrypted_text": encrypted_text }
+    elif cipher.mode == "decrypt":
+        decrypted_text = caesar_decryption(cipher.text, cipher.offset)
+        return { "decrypted_text": decrypted_text }
     else:
-        middle = (len(l_list) // 2) + 1
-    l_list_1 = l_list[:middle]
-    l_list_2 = l_list[middle:]
-    for i in range(len(l_list) // 2):
-        decrypted_text += l_list_1[i]
-        decrypted_text += l_list_2[i]
-    return decrypted_text
+        raise "Typo error"
+
+@app.get("/fence/encrypt")
+def fence_encrypt(text: str):
+    encrypted_text = fence_encryption(text)
+    return { "encrypted_text": encrypted_text }
+
+class FenceCipher(BaseModel):
+    text: str
+
+@app.post("/fence/decrypt")
+def fence_decrypt(cipher: FenceCipher):
+    decrypted_text = fence_decryption(cipher.text)
+    return { "decrypted": decrypted_text }
+
+
 
 
 
