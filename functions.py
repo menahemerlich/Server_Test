@@ -9,6 +9,7 @@ def caesar_encryption(text: str, offset: int):
             for i in range(len(l_list)):
                 if ch == l_list[i]:
                     encrypted_text += l_list[(i + offset) % 26]
+    print("The text was encrypted with ciphertext.")
     return encrypted_text
 
 def caesar_decryption(text: str, offset: int):
@@ -21,6 +22,7 @@ def caesar_decryption(text: str, offset: int):
             for i in range(len(l_list)):
                 if ch == l_list[i]:
                     decrypted_text += l_list[(i - offset) % 26]
+    print("The text was successfully decrypted.")
     return decrypted_text
 
 def fence_encryption(text: str):
@@ -35,6 +37,7 @@ def fence_encryption(text: str):
     for i in range(len(l_list)):
         if i % 2 != 0:
             encrypted_text += l_list[i]
+    print("The text was encrypted with ciphertext.")
     return encrypted_text
 
 def fence_decryption(text: str):
@@ -51,6 +54,7 @@ def fence_decryption(text: str):
     for i in range(len(l_list) // 2):
         decrypted_text += l_list_1[i]
         decrypted_text += l_list_2[i]
+    print("The text was successfully decrypted.")
     return decrypted_text
 
 
